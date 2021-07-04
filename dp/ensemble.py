@@ -166,7 +166,7 @@ class PrivateClassifier(BaseEnsemble, ClassifierMixin):
         )
         X = check_array(X)
         self.teacher_preds_, y_pred = _aggregate_teachers(
-            X, self.estimators_, self.epsilon, self.random_state
+            X, self.estimators_, self.epsilon, 'laplace', self.random_state
         )
         return y_pred
 
