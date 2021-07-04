@@ -3,7 +3,9 @@ from joblib import Parallel, delayed
 from sklearn.base import ClassifierMixin, BaseEstimator
 from sklearn.ensemble import BaseEnsemble
 from sklearn.ensemble._base import _partition_estimators
+from sklearn.preprocessing import LabelEncoder
 from sklearn.linear_model import LogisticRegression
+from sklearn.utils.multiclass import unique_labels
 from sklearn.utils.multiclass import check_classification_targets
 from sklearn.utils.validation import (
     check_is_fitted,
@@ -111,9 +113,10 @@ class PrivateClassifier(BaseEnsemble, ClassifierMixin):
     def _validate_y(self, y):
         y = column_or_1d(y, warn=True)
         check_classification_targets(y)
-        self.classes_, y = np.unique(y, return_inverse=True)
+        self.classes_ = unique_labels(y)
         self.n_classes_ = len(self.classes_)
-
+        self.label_encoder_ = LabelEncoder().fit(y)
+        y = self.label_encoder_.transform(y)
         return y
 
     def _fit(self, X, y):
@@ -127,7 +130,6 @@ class PrivateClassifier(BaseEnsemble, ClassifierMixin):
         )
         self._validate_estimator()
         random_state = check_random_state(self.random_state)
-
         y = self._validate_y(y)
 
         n_jobs, n_estimators, starts = _partition_estimators(
@@ -166,7 +168,7 @@ class PrivateClassifier(BaseEnsemble, ClassifierMixin):
         )
         X = check_array(X)
         self.teacher_preds_, y_pred = _aggregate_teachers(
-            X, self.estimators_, self.epsilon, 'laplace', self.random_state
+            X, self.estimators_, self.epsilon, "laplace", self.random_state
         )
         return y_pred
 
@@ -185,4 +187,5 @@ class PrivateClassifier(BaseEnsemble, ClassifierMixin):
 
     def predict(self, X):
         y_pred = self._predict(X)
-        return y_pred
+        print(self.label_encoder_.inverse_transform(y_pred), y_pred)
+        return self.label_encoder_.inverse_transform(y_pred)
