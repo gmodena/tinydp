@@ -22,10 +22,12 @@ python setup.py install
 PATE assumes two main components: private labelled datasets ("teachers") and a public unlabelled dataset ("student").
 
 Private data is partitioned in non-overlapping training sets. 
-An ensamble of "teachers" are trained independently (with no privacy guarantee). 
+An ensemble of "teachers" are trained independently (with no privacy guarantee). 
 The "teacher" models are scored on the unlabelled, public, "student" datasets. Their predictions are aggregated and perturbed with random noise. A "student" model can then trained on public data labelled by the ensamble, instead of on the original, private, dataset.
 
-For more details on how (and why) this work see the reference presented [here](https://nowave.it/course-notes-on-differential-privacy.html).
+[This blog post](https://nowave.it/course-notes-on-differential-privacy.html) contains some details on references on how
+(and why) this works.
+
 
 # Example
 
@@ -45,7 +47,7 @@ X_private, X_public, y_private, y_public = train_test_split(X, y, test_size=0.33
 
 # PrivateClassifier implements a PATE ensemble of teachers.
 # It behaves like a regular sklearn Classifier. The epsilon
-# parameter governs the amount of noise added to pred
+# parameter governs the amount of noise added to teachers' predictions.
 clf = PrivateClassifier(n_estimators=10, epsilon=0.1, random_state=1)
 clf.fit(X_private, y_private)
 y_pred = clf.predict(X_public)
@@ -56,7 +58,7 @@ classification_report(y_public, y_pred)
 # Evaluation
 
 A-posteriori analysis can be performed on the teachers aggregate to determine whether the model satisfies 
-the desired epsilon budget. OpenMined `pysyft` package provides some utilities for this.
+the desired epsilon budget. OpenMined's [pysyft](https://github.com/OpenMined/PySyft) provides some utilities for this type of analysis.
 ```python
 from syft.frameworks.torch.dp import pate
 
