@@ -187,5 +187,4 @@ class PrivateClassifier(BaseEnsemble, ClassifierMixin):
 
     def predict(self, X):
         y_pred = self._predict(X)
-        print(self.label_encoder_.inverse_transform(y_pred), y_pred)
         return self.label_encoder_.inverse_transform(y_pred)
