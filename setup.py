@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-REQUIRED_PKGS = ['scikit-learn==0.24.1']
+REQUIRED_PKGS = ['scikit-learn==1.0.1']
 TESTS_REQUIRE = ['pytest==6.2.4']
 
 setup(
